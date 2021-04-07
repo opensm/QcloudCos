@@ -119,7 +119,7 @@ class CosUpload:
                         raise Exception("标志文件产生时间超过30分钟，请运维检查是否有问题！")
                 return True
             except Exception as error:
-                self.alert(message=str(error))
+                self.alert(message=error.message)
                 return True
         else:
             return False
