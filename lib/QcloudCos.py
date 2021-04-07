@@ -35,6 +35,7 @@ class CosUpload:
         abs_path, filetype = os.path.splitext(achieve)
         for root, dirs, achieves in os.walk(abs_path):
             for x in achieves:
+                print(x)
                 abs_achieve = os.path.join(root, x)
                 if os.path.exists(abs_achieve):
                     return False
@@ -73,7 +74,6 @@ class CosUpload:
             RecodeLog.error("解压文件不存在，{0}!".format(package))
             sys.exit(1)
         filename, filetype = os.path.splitext(package)
-        print(filename,filetype)
         if filetype != ".zip":
             RecodeLog.error("打包的文件不是zip格式:{0}".format(package))
             self.alert(message="打包的文件不是zip格式:{0}".format(package))
@@ -92,6 +92,7 @@ class CosUpload:
             status, output = commands.getstatusoutput(cmd_str)
             if status != 0:
                 raise Exception(output)
+            RecodeLog.info("执行:{0},成功!".format(cmd_str))
             return True
         except Exception as error:
             RecodeLog.error(msg="执行:{0},失败，原因:{1}".format(cmd_str, error))
@@ -113,7 +114,7 @@ class CosUpload:
                 RecodeLog.warn(msg="版本：{0},存在：{1}个解压包，退出该版本执行，目前只支持一个ZIP的处理方式。".format(x, len(achieve_list)))
                 self.alert(message="版本：{0},存在：{1}个解压包，退出该版本执行，目前只支持一个ZIP的处理方式。".format(x, len(achieve_list)))
                 continue
-            elif len(achieve_list) == 0 :
+            elif len(achieve_list) == 0:
                 RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
                 continue
             self.unzip_package(package=achieve_list[0])
