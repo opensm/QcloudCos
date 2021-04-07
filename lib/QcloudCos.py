@@ -37,7 +37,7 @@ class CosUpload:
             for x in achieves:
                 print(x)
                 abs_achieve = os.path.join(root, x)
-                if os.path.exists(abs_achieve):
+                if not os.path.exists(abs_achieve):
                     return False
                 try:
                     with open(abs_achieve, 'rb') as fp:
