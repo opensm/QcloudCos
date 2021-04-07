@@ -4,15 +4,18 @@
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 import sys
-from settings import COS_INIT_PARAMS, BUCKET, AGENTID, CORPID, SECRET, FINISH_DIR, UPLOAD_DIR, ERROR_DIR, ENV_LIST,PARTY
+from settings import COS_INIT_PARAMS, BUCKET, AGENTID, CORPID, SECRET, FINISH_DIR, UPLOAD_DIR, ERROR_DIR, ENV_LIST, \
+    PARTY, LOG_DIR
 import os
 import commands
 from Log import RecodeLog
 import glob
+import time
 
 
 class CosUpload:
     def __init__(self):
+        self.tag_file = os.path.join(LOG_DIR, 'cos.tag')
         try:
             cnf = CosConfig(**COS_INIT_PARAMS)
             self.client = CosS3Client(cnf)
@@ -98,10 +101,37 @@ class CosUpload:
             RecodeLog.error(msg="执行:{0},失败，原因:{1}".format(cmd_str, error))
             return False
 
+    def touch_tag(self):
+        try:
+            with open(self.tag_file, 'w') as fff:
+                fff.write(str(time.time()))
+        except Exception as error:
+            RecodeLog.error(msg="创建tag文件:{0},失败，原因:{1}!".format(self.tag_file, error))
+            self.alert(message="创建tag文件:{0},失败，原因:{1}!".format(self.tag_file, error))
+            sys.exit(1)
+
+    def check_tag(self):
+        if os.path.exists(self.tag_file):
+            try:
+                with open(self.tag_file, 'r') as fff:
+                    data = int(fff.readline().strip('\n'))
+                    if time.time() - data > 1800:
+                        raise Exception("标志文件产生时间超过30分钟，请运维检查是否有问题！")
+                return True
+            except Exception as error:
+                self.alert(message=error)
+                return True
+        else:
+            return False
+
     def run(self):
         """
         :return:
         """
+        if self.check_tag():
+            RecodeLog.warn(msg="已经有进程在上传文件，退出！")
+            sys.exit(0)
+        self.touch_tag()
         for x in ENV_LIST:
             env_upload = os.path.join(UPLOAD_DIR, x)
             if not os.path.exists(
