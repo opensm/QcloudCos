@@ -25,9 +25,10 @@ class CosUpload:
         :param achieve:
         :return:
         """
-        ftp_dir = os.path.abspath(achieve)
-        error_dir = os.path.join(ftp_dir, ERROR_DIR)
-        finish_dir = os.path.join(ftp_dir, FINISH_DIR)
+        current_dir = os.path.dirname(achieve)
+        env_dir = os.path.dirname(current_dir)
+        error_dir = os.path.join(current_dir, ERROR_DIR)
+        finish_dir = os.path.join(current_dir, FINISH_DIR)
         status = True
         if not os.path.isfile(achieve):
             RecodeLog.warn(msg="文件夹:{0},不支持当前上传！".format(achieve))
@@ -35,7 +36,6 @@ class CosUpload:
         abs_path, filetype = os.path.splitext(achieve)
         for root, dirs, achieves in os.walk(abs_path):
             for x in achieves:
-                print(x)
                 abs_achieve = os.path.join(root, x)
                 if not os.path.exists(abs_achieve):
                     return False
@@ -44,7 +44,7 @@ class CosUpload:
                         response = self.client.put_object(
                             Bucket=BUCKET,
                             Body=fp,
-                            Key=x,
+                            Key=os.path.join(env_dir,x),
                             StorageClass='STANDARD',
                             EnableMD5=False
                         )
