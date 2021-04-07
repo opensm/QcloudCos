@@ -23,6 +23,9 @@ class CosUpload:
             RecodeLog.error(msg="初始化COS失败，{0}".format(error))
             sys.exit(1)
 
+    def cos_upload(self):
+        pass
+
     def upload(self, achieve, env_dir):
         """
         :param achieve:
@@ -36,25 +39,32 @@ class CosUpload:
         if not os.path.isfile(achieve):
             RecodeLog.warn(msg="文件夹:{0},不支持当前上传！".format(achieve))
             return False
+
         abs_path, filetype = os.path.splitext(achieve)
-        for root, dirs, achieves in os.walk(abs_path):
-            for x in achieves:
-                abs_achieve = os.path.join(root, x)
-                if not os.path.exists(abs_achieve):
-                    return False
-                try:
-                    with open(abs_achieve, 'rb') as fp:
-                        response = self.client.put_object(
-                            Bucket=BUCKET,
-                            Body=fp,
-                            Key=os.path.join(env_dir, x),
-                            StorageClass='STANDARD',
-                            EnableMD5=False
-                        )
-                        RecodeLog.info(msg=response)
-                except Exception as error:
-                    RecodeLog.error(msg="文件:{0}，上传失败，原因：{1}".format(abs_achieve, error))
-                    status = False
+        if not os.path.exists(os.path.join(abs_path, 'baicorv.json')):
+            RecodeLog.warn(msg="baicorv文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve))
+            self.alert(message="baicorv文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve))
+            return False
+        apk = glob.glob(os.path.join(abs_path, "*.apk"))
+        if len(apk) > 1 or len(apk) == 0:
+            RecodeLog.warn(msg="APK文件异常，apk文件个数：{0},请检查压缩包:{1}！".format(len(apk), achieve))
+            self.alert(message="APK文件异常，apk文件个数：{0},请检查压缩包:{1}！".format(len(apk), achieve))
+            return False
+        for x in [os.path.join(abs_path, 'baicorv.json'), apk[0]]:
+            try:
+                with open(x, 'rb') as fp:
+                    response = self.client.put_object(
+                        Bucket=BUCKET,
+                        Body=fp,
+                        Key=os.path.join(env_dir, os.path.basename(x)),
+                        StorageClass='STANDARD',
+                        EnableMD5=False
+                    )
+                    RecodeLog.info(msg=response)
+            except Exception as error:
+                RecodeLog.error(msg="文件:{0}，上传失败，原因：{1}".format(os.path.basename(x), error))
+                status = False
+
         if status:
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
             exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
@@ -81,7 +91,7 @@ class CosUpload:
             RecodeLog.error("打包的文件不是zip格式:{0}".format(package))
             self.alert(message="打包的文件不是zip格式:{0}".format(package))
             sys.exit(1)
-        exec_str = "unzip -o {0} -d {1}".format(package,filename)
+        exec_str = "unzip -o {0} -d {1}".format(package, filename)
         if not self.cmd(cmd_str=exec_str):
             RecodeLog.error("解压文件失败：{0}，任务退出!".format(package))
             sys.exit(1)
@@ -138,7 +148,7 @@ class CosUpload:
                     env_upload
             ):
                 continue
-            for y in ['error', 'finish']:
+            for y in [ERROR_DIR, FINISH_DIR]:
                 dirs = os.path.join(UPLOAD_DIR, x, y)
                 if os.path.exists(dirs):
                     continue
@@ -155,7 +165,6 @@ class CosUpload:
                 continue
             self.unzip_package(package=achieve_list[0])
             self.upload(achieve=achieve_list[0], env_dir=x)
-            time.sleep(10)
         os.remove(self.tag_file)
 
     def alert(self, message):
