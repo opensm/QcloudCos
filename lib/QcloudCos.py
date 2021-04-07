@@ -57,9 +57,9 @@ class CosUpload:
             exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
             self.cmd(exec_str1)
             self.cmd(exec_str2)
-            self.alert(message="上传资源成功！")
+            self.alert(message="上传资源成功,文件名:{0}!".format(achieve))
         else:
-            self.alert(message="上传资源失败！")
+            self.alert(message="上传资源失败，文件名:{0}!".format(achieve))
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
             self.cmd(exec_str1)
