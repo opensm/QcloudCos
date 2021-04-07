@@ -91,6 +91,12 @@ class CosUpload:
             RecodeLog.error("打包的文件不是zip格式:{0}".format(package))
             self.alert(message="打包的文件不是zip格式:{0}".format(package))
             sys.exit(1)
+
+        exec_str1 = "unzip -t {0}".format(package)
+        if not self.cmd(cmd_str=exec_str1):
+            RecodeLog.error("解压文件失败：{0}，任务退出!".format(package))
+            return False
+
         exec_str = "unzip -o {0} -d {1}".format(package, filename)
         if not self.cmd(cmd_str=exec_str):
             RecodeLog.error("解压文件失败：{0}，任务退出!".format(package))
@@ -163,7 +169,8 @@ class CosUpload:
             elif len(achieve_list) == 0:
                 RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
                 continue
-            self.unzip_package(package=achieve_list[0])
+            if not self.unzip_package(package=achieve_list[0]):
+                continue
             self.upload(achieve=achieve_list[0], env_dir=x)
         os.remove(self.tag_file)
 
