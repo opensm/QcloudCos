@@ -74,7 +74,7 @@ class CosUpload:
             sys.exit(1)
         filename, filetype = os.path.splitext(package)
         print(filename,filetype)
-        if filetype != "zip":
+        if filetype != ".zip":
             RecodeLog.error("打包的文件不是zip格式:{0}".format(package))
             self.alert(message="打包的文件不是zip格式:{0}".format(package))
             sys.exit(1)
