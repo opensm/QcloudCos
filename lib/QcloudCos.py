@@ -20,13 +20,13 @@ class CosUpload:
             RecodeLog.error(msg="初始化COS失败，{0}".format(error))
             sys.exit(1)
 
-    def upload(self, achieve):
+    def upload(self, achieve, env_dir):
         """
         :param achieve:
+        :param env_dir:
         :return:
         """
         current_dir = os.path.dirname(achieve)
-        env_dir = os.path.dirname(current_dir)
         error_dir = os.path.join(current_dir, ERROR_DIR)
         finish_dir = os.path.join(current_dir, FINISH_DIR)
         status = True
@@ -44,7 +44,7 @@ class CosUpload:
                         response = self.client.put_object(
                             Bucket=BUCKET,
                             Body=fp,
-                            Key=os.path.join(env_dir,x),
+                            Key=os.path.join(env_dir, x),
                             StorageClass='STANDARD',
                             EnableMD5=False
                         )
@@ -118,7 +118,7 @@ class CosUpload:
                 RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
                 continue
             self.unzip_package(package=achieve_list[0])
-            self.upload(achieve=achieve_list[0])
+            self.upload(achieve=achieve_list[0],env_dir=x)
 
     def alert(self, message):
         """
