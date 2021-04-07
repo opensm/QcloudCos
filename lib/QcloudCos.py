@@ -78,7 +78,7 @@ class CosUpload:
             RecodeLog.error("打包的文件不是zip格式:{0}".format(package))
             self.alert(message="打包的文件不是zip格式:{0}".format(package))
             sys.exit(1)
-        exec_str = "unzip {}".format(package)
+        exec_str = "unzip -o {}".format(package)
         if not self.cmd(cmd_str=exec_str):
             RecodeLog.error("解压文件失败：{0}，任务退出!".format(package))
             sys.exit(1)
