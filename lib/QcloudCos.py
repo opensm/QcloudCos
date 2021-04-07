@@ -54,7 +54,7 @@ class CosUpload:
                     status = False
         if status:
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
-            exec_str2 = "mv {0} {1}".format(abs_path, finish_dir)
+            exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
             self.cmd(exec_str1)
             self.cmd(exec_str2)
             self.alert(message="上传资源成功！")
@@ -118,7 +118,7 @@ class CosUpload:
                 RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
                 continue
             self.unzip_package(package=achieve_list[0])
-            self.upload(achieve=achieve_list[0],env_dir=x)
+            self.upload(achieve=achieve_list[0], env_dir=x)
 
     def alert(self, message):
         """
