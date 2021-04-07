@@ -48,7 +48,7 @@ class CosUpload:
                             StorageClass='STANDARD',
                             EnableMD5=False
                         )
-                        print(response)
+                        RecodeLog.info(msg=response)
                 except Exception as error:
                     RecodeLog.error(msg="文件:{0}，上传失败，原因：{1}".format(abs_achieve, error))
                     status = False
