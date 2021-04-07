@@ -101,6 +101,7 @@ class CosUpload:
         if not self.cmd(cmd_str=exec_str):
             RecodeLog.error("解压文件失败：{0}，任务退出!".format(package))
             sys.exit(1)
+        return True
 
     def cmd(self, cmd_str):
         """
