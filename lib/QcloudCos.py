@@ -155,7 +155,7 @@ class CosUpload:
                 continue
             self.unzip_package(package=achieve_list[0])
             self.upload(achieve=achieve_list[0], env_dir=x)
-
+            time.sleep(3)
         os.rmdir(self.tag_file)
 
     def alert(self, message):
