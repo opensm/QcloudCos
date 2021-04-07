@@ -112,6 +112,9 @@ class CosUpload:
                 RecodeLog.warn(msg="版本：{0},存在：{1}个解压包，退出该版本执行，目前只支持一个ZIP的处理方式。".format(x, len(achieve_list)))
                 self.alert(message="版本：{0},存在：{1}个解压包，退出该版本执行，目前只支持一个ZIP的处理方式。".format(x, len(achieve_list)))
                 continue
+            elif len(achieve_list) == 0 :
+                RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
+                continue
             self.unzip_package(package=achieve_list[0])
             self.upload(achieve=achieve_list[0])
 
