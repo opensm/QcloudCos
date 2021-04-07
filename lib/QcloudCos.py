@@ -4,7 +4,7 @@
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 import sys
-from settings import COS_INIT_PARAMS, BUCKET, AGENTID, CORPID, SECRET, FINISH_DIR, UPLOAD_DIR, ERROR_DIR, ENV_LIST
+from settings import COS_INIT_PARAMS, BUCKET, AGENTID, CORPID, SECRET, FINISH_DIR, UPLOAD_DIR, ERROR_DIR, ENV_LIST,PARTY
 import os
 import commands
 from Log import RecodeLog
@@ -141,7 +141,7 @@ class CosUpload:
             RecodeLog.error(msg="获取token失败，{}".format(error))
             sys.exit(1)
         data = {
-            "touser": 'YaoShaoQiang',  # 向这些部门发送
+            "toparty": PARTY,  # 向这些部门发送
             "msgtype": "text",
             "agentid": AGENTID,  # 应用的 id 号
             "text": {
