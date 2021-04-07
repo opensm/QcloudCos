@@ -108,6 +108,12 @@ class CosUpload:
                     env_upload
             ):
                 continue
+            for y in ['error', 'finish']:
+                dirs = os.path.join(UPLOAD_DIR, x, y)
+                if os.path.exists(dirs):
+                    continue
+                os.makedirs(dirs)
+                os.chown(dirs, 1000, 1000)
             os.chdir(env_upload)
             achieve_list = glob.glob(os.path.join(env_upload, "*.zip"))
             if len(achieve_list) > 1:
