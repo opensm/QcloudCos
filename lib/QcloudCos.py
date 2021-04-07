@@ -114,7 +114,7 @@ class CosUpload:
         if os.path.exists(self.tag_file):
             try:
                 with open(self.tag_file, 'r') as fff:
-                    data = int(fff.readline().strip('\n'))
+                    data = float(fff.readline().strip('\n'))
                     if time.time() - data > 1800:
                         raise Exception("标志文件产生时间超过30分钟，请运维检查是否有问题！")
                 return True
@@ -155,8 +155,8 @@ class CosUpload:
                 continue
             self.unzip_package(package=achieve_list[0])
             self.upload(achieve=achieve_list[0], env_dir=x)
-            time.sleep(3)
-        os.rmdir(self.tag_file)
+            time.sleep(10)
+        os.remove(self.tag_file)
 
     def alert(self, message):
         """
