@@ -11,6 +11,7 @@ import commands
 from Log import RecodeLog
 import glob
 import time
+import simplejson as json
 
 
 class CosUpload:
@@ -23,8 +24,84 @@ class CosUpload:
             RecodeLog.error(msg="初始化COS失败，{0}".format(error))
             sys.exit(1)
 
-    def cos_upload(self):
-        pass
+    def read_json(self, json_file):
+        """
+        :param json_file:
+        :return:
+        """
+        try:
+            if not os.path.exists(json_file):
+                raise Exception("文件不存在,{0}".format(json_file))
+            with open(json_file, 'r') as fff:
+                data = json.loads(fff)
+                return data
+        except Exception as error:
+            RecodeLog.error(msg="读取{1}文件失败：{0}".format(error, json_file))
+            return False
+
+    def read_js(self, js_file):
+        """
+        :param js_file:
+        :return:
+        """
+        try:
+            if not os.path.exists(js_file):
+                raise Exception("文件不存在,{0}".format(js_file))
+            with open(js_file, 'r') as fff:
+                data = fff.readlines()
+                return data
+        except Exception as error:
+            RecodeLog.error(msg="读取{1}文件失败：{0}".format(error, js_file))
+            return False
+
+    def check_package(self, abs_path, achieve):
+        """
+        :param abs_path:
+        :param achieve:
+        :return:
+        """
+        achieve_list = []
+        for x in ['baicorv.json', 'baicorv.js']:
+            abs_achieve = os.path.join(abs_path, x)
+            if not os.path.exists(abs_achieve):
+                RecodeLog.warn(msg="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, abs_achieve))
+                self.alert(message="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, abs_achieve))
+                return False
+            achieve_list.append(abs_achieve)
+        json_version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
+        if not json_version_data:
+            RecodeLog.error(msg="{0}:数据读取异常！".format(os.path.join(abs_path, 'baicorv.json')))
+            self.alert(message="{0}:数据读取异常！".format(os.path.join(abs_path, 'baicorv.json')))
+            return False
+
+        package = json_version_data['package']
+        version = json_version_data['version']
+        abs_package = os.path.join(abs_path, package)
+        if not os.path.exists(abs_package):
+            RecodeLog.error(msg="文件不存在：{0}".format(abs_package))
+            self.alert(message="文件不存在：{0}".format(abs_package))
+            return False
+        if package.split("_")[2] != version:
+            RecodeLog.error(msg="获取的文件版本：{0}和baicorv.json版本不一致：{1}".format(package, version))
+            self.alert(message="获取的文件版本：{0}和baicorv.json版本不一致：{1}".format(package, version))
+            return False
+        # 检查js
+        js_version_data = self.read_js(js_file=os.path.join(abs_path, 'baicorv.js'))
+        js_version_status = False
+        js_package_status = False
+        for y in js_version_data:
+            if '"version":{0}'.format(version) in y.strip(' '):
+                js_version_status = True
+            if '"package":{0}'.format(package) in y.strip(' '):
+                js_package_status = True
+        achieve_list.append(abs_package)
+        if js_version_status and js_package_status:
+            RecodeLog.info(msg="{0},{1},{2},三者信息对应，检查无问题！".format(*achieve_list))
+            return achieve_list
+        else:
+            RecodeLog.error(msg="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*achieve_list))
+            self.alert(message="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*achieve_list))
+            return False
 
     def upload(self, achieve, env_dir):
         """
@@ -39,18 +116,13 @@ class CosUpload:
         if not os.path.isfile(achieve):
             RecodeLog.warn(msg="文件夹:{0},不支持当前上传！".format(achieve))
             return False
-
         abs_path, filetype = os.path.splitext(achieve)
-        if not os.path.exists(os.path.join(abs_path, 'baicorv.json')):
-            RecodeLog.warn(msg="baicorv文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve))
-            self.alert(message="baicorv文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve))
+        check_result = self.check_package(abs_path=abs_path, achieve=achieve)
+
+        if not check_result:
             return False
-        apk = glob.glob(os.path.join(abs_path, "*.apk"))
-        if len(apk) > 1 or len(apk) == 0:
-            RecodeLog.warn(msg="APK文件异常，apk文件个数：{0},请检查压缩包:{1}！".format(len(apk), achieve))
-            self.alert(message="APK文件异常，apk文件个数：{0},请检查压缩包:{1}！".format(len(apk), achieve))
-            return False
-        for x in [os.path.join(abs_path, 'baicorv.json'), apk[0]]:
+        # 开始上传
+        for x in check_result:
             try:
                 with open(x, 'rb') as fp:
                     response = self.client.put_object(
@@ -64,7 +136,7 @@ class CosUpload:
             except Exception as error:
                 RecodeLog.error(msg="文件:{0}，上传失败，原因：{1}".format(os.path.basename(x), error))
                 status = False
-
+        # 根据结果移动文件
         if status:
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
             exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
@@ -141,6 +213,33 @@ class CosUpload:
         else:
             return False
 
+    def check_task_file(self, achieve_name):
+        """
+        :param achieve_name:
+        :return:
+        """
+        if not os.path.exists(achieve_name):
+            RecodeLog.error(msg="文件不存在:{0}".format(achieve_name))
+            self.alert(message="文件不存在:{0}".format(achieve_name))
+            return False
+        achieve_base_name = os.path.basename(achieve_name)
+        achieve_name_data = os.path.splitext(achieve_base_name)[0].split("_")
+        if len(achieve_name_data) != 3:
+            RecodeLog.error(msg="{0}：上传文件必须以:打包时间_版本号_上传时间.zip格式，请检查！".format(achieve_name_data))
+            self.alert(message="{0}：上传文件必须以:打包时间_版本号_上传时间.zip格式，请检查！".format(achieve_name_data))
+        try:
+            timestamp = time.mktime(time.strptime(achieve_name_data[2], "%Y%m%d%H%M%S"))
+        except Exception as error:
+            RecodeLog.error(msg="{0}：上传文件必须以:打包时间_版本号_上传时间.zip格式，请检查！".format(achieve_name_data, error))
+            self.alert(message="{0}：上传文件必须以:打包时间_版本号_上传时间.zip格式，请检查！".format(achieve_name_data))
+            return False
+        if time.time() < timestamp:
+            RecodeLog.warn(msg="任务时间未到：{0}".format(achieve_name))
+            return False
+        else:
+            RecodeLog.info(msg="任务时间已到：{0}".format(achieve_name))
+            return True
+
     def run(self):
         """
         :return:
@@ -169,6 +268,9 @@ class CosUpload:
                 continue
             elif len(achieve_list) == 0:
                 RecodeLog.warn("版本：{0}，不存在上传内容，跳过!".format(x))
+                continue
+            # 文件名格式 20210410103200_v1.2.1_20210410110100.zip 打包时间_版本号_上传时间.zip
+            if not self.check_task_file(achieve_name=achieve_list[0]):
                 continue
             if not self.unzip_package(package=achieve_list[0]):
                 continue
