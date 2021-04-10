@@ -95,6 +95,7 @@ class CosUpload:
             if '"package":{0}'.format(package) in y.strip(' '):
                 js_package_status = True
         achieve_list.append(abs_package)
+        achieve_list = [os.path.basename(x) for x in achieve_list]
         if js_version_status and js_package_status:
             RecodeLog.info(msg="{0},{1},{2},三者信息对应，检查无问题！".format(*achieve_list))
             return achieve_list
