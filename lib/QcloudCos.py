@@ -119,8 +119,7 @@ class CosUpload:
         for url in url_list:
             try:
                 check_url = os.path.join(
-                    ONLINE_URL,
-                    url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
+                    url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '').replace("//", "/")
                 )
                 print(url)
                 getr = requests.get(url=check_url)
