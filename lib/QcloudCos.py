@@ -136,12 +136,10 @@ class CosUpload:
         abs_path, filetype = os.path.splitext(achieve)
         check_result = self.check_package(abs_path=abs_path, achieve=achieve)
         if not check_result:
-            print("dddd")
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
             self.cmd(exec_str1)
             self.cmd(exec_str2)
-            print("dddd")
             return False
         version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
         # 开始上传
@@ -250,6 +248,14 @@ class CosUpload:
         :param achieve_name:
         :return:
         """
+        current_dir = os.path.dirname(achieve_name)
+        finish_dir = os.path.join(current_dir, FINISH_DIR)
+        if os.path.exists(
+                os.path.join(finish_dir, os.path.basename(achieve_name))
+        ):
+            RecodeLog.warn(msg="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
+            self.alert(message="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
+            return False
         if not os.path.exists(achieve_name):
             RecodeLog.error(msg="文件不存在:{0}".format(achieve_name))
             self.alert(message="文件不存在:{0}".format(achieve_name))
