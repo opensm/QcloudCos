@@ -122,6 +122,7 @@ class CosUpload:
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
                 )
+                print(url)
                 getr = requests.get(url=check_url)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
@@ -198,7 +199,9 @@ class CosUpload:
                 time.sleep(20)
             else:
                 self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
+                return
             i += 1
+        self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(achieve, CHECK_ONLINE_COUNT * 20))
 
     def unzip_package(self, package):
         """
