@@ -193,7 +193,7 @@ class CosUpload:
             if not self.check_url(url_list=check_result):
                 time.sleep(20)
             else:
-                self.alert(message="{0}:文件已上传完成，并已生效！")
+                self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
             i += 1
 
     def unzip_package(self, package):
