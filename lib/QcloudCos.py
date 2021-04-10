@@ -4,8 +4,7 @@
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 import sys
-from settings import COS_INIT_PARAMS, BUCKET, AGENTID, CORPID, SECRET, FINISH_DIR, UPLOAD_DIR, ERROR_DIR, ENV_LIST, \
-    PARTY, LOG_DIR
+from settings import *
 import os
 import commands
 from Log import RecodeLog
@@ -103,6 +102,24 @@ class CosUpload:
             self.alert(message="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*achieve_list))
             return False
 
+    def check_url(self, url_list):
+        """
+        :param url_list:
+        :return:
+        """
+        import requests
+        for url in url_list:
+            try:
+                check_url = os.path.join(ONLINE_URL, url.strip(UPLOAD_DIR))
+                getr = requests.get(url=check_url)
+                if getr.status_code != 200:
+                    raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
+                continue
+            except Exception as error:
+                RecodeLog.error(msg=error)
+                return False
+        return True
+
     def upload(self, achieve, env_dir):
         """
         :param achieve:
@@ -152,6 +169,12 @@ class CosUpload:
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
             self.cmd(exec_str1)
             self.cmd(exec_str2)
+            return
+        i = 0
+        while i <= CHECK_ONLINE_COUNT:
+            if not self.check_url(url_list=check_result):
+                time.sleep(20)
+            i += 1
 
     def unzip_package(self, package):
         """
