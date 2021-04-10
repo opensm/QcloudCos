@@ -10,7 +10,15 @@ import commands
 from Log import RecodeLog
 import glob
 import time
+import hashlib
 import simplejson as json
+
+
+def out_md5(src):
+    # 简单封装
+    m = hashlib.md5()
+    m.update(src.encode('utf-8'))
+    return m.hexdigest()
 
 
 class CosUpload:
@@ -122,9 +130,14 @@ class CosUpload:
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
                 )
-                getr = requests.get(url="https://{0}".format(check_url.replace("//", "")))
+                getr = requests.get(url="https://{0}".format(check_url.replace("//", "")), stream=True)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
+                remote_data = getr.raw.read()
+                with open(url, 'r') as fff:
+                    local_data = out_md5(src=fff.read())
+                if remote_data != local_data:
+                    raise Exception("文件未更新,获取到远程MD5:{0},本地MD5:{1}".format(remote_data, local_data))
                 continue
             except Exception as error:
                 RecodeLog.error(msg=error)
