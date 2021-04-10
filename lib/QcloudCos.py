@@ -90,9 +90,9 @@ class CosUpload:
         js_version_status = False
         js_package_status = False
         for y in js_version_data:
-            if "'version':'{0}'".format(version) in y.strip(' '):
+            if "'version':'{0}'".format(version) in y.strip(' ').strip('\n'):
                 js_version_status = True
-            if "'package':'{0}'".format(package) in y.strip(' '):
+            if "'package':'{0}'".format(package) in y.strip(' ').strip('\n'):
                 js_package_status = True
         achieve_list.append(abs_package)
         if js_version_status and js_package_status:
