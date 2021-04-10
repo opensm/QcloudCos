@@ -8,9 +8,9 @@ COS_INIT_PARAMS = {
 }
 BUCKET = ''
 # 企业微信
-SECRET = "4KMlUU6brl7DBUoHM0YBAKRU6yexoVh9Be8WeT69h44"
-CORPID = "ww084eeda5e1dc7f0e"
-AGENTID = "1000030"
+SECRET = ""
+CORPID = ""
+AGENTID = ""
 PARTY = ""
 
 UPLOAD_DIR = "/data/ftp/apk"
