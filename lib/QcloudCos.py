@@ -32,7 +32,7 @@ class CosUpload:
             if not os.path.exists(json_file):
                 raise Exception("文件不存在,{0}".format(json_file))
             with open(json_file, 'r') as fff:
-                data = json.loads(fff)
+                data = json.loads(fff.read())
                 print(data)
                 return data
         except Exception as error:
