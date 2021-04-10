@@ -95,13 +95,12 @@ class CosUpload:
             if '"package":{0}'.format(package) in y.strip(' '):
                 js_package_status = True
         achieve_list.append(abs_package)
-        achieve_list = [os.path.basename(x) for x in achieve_list]
         if js_version_status and js_package_status:
-            RecodeLog.info(msg="{0},{1},{2},三者信息对应，检查无问题！".format(*achieve_list))
+            RecodeLog.info(msg="{0},{1},{2},三者信息对应，检查无问题！".format(*[os.path.basename(x) for x in achieve_list]))
             return achieve_list
         else:
-            RecodeLog.error(msg="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*achieve_list))
-            self.alert(message="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*achieve_list))
+            RecodeLog.error(msg="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*[os.path.basename(x) for x in achieve_list]))
+            self.alert(message="{0},{1},{2},三者信息不对应对应，检查不通过，请打包人员检查！".format(*[os.path.basename(x) for x in achieve_list]))
             return False
 
     def check_url(self, url_list):
