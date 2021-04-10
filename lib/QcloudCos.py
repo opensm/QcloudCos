@@ -41,7 +41,6 @@ class CosUpload:
                 raise Exception("文件不存在,{0}".format(json_file))
             with open(json_file, 'r') as fff:
                 data = json.loads(fff.read())
-                print(data)
                 return data
         except Exception as error:
             RecodeLog.error(msg="读取{1}文件失败：{0}".format(error, json_file))
@@ -130,7 +129,7 @@ class CosUpload:
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
                 )
-                getr = requests.get(url="https://{0}".format(check_url.replace("//", "")), stream=True)
+                getr = requests.get(url="https://{0}".format(check_url.replace("\/\/", "")), stream=True)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
                 remote_data = out_md5(src=getr.raw.read())
@@ -404,6 +403,5 @@ class CosUpload:
             RecodeLog.info(msg="发送消息成功:{}".format(r.json()['errmsg']))
             return True
         except Exception as error:
-            print("发送消息失败,{}".format(error))
             RecodeLog.info(msg="发送消息失败,{}".format(error))
             return False
