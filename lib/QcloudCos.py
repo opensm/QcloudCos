@@ -188,9 +188,11 @@ class CosUpload:
                 if not self.check_url(url_list=check_result, abs_path=abs_path):
                     time.sleep(20)
                 else:
-                    self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
+                    self.alert(message="{0}:文件已上传完成，并已生效！".format(os.path.basename(achieve)))
                 i += 1
-            self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(achieve, CHECK_ONLINE_COUNT * 20))
+            self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(
+                os.path.basename(achieve), CHECK_ONLINE_COUNT * 20
+            ))
 
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
             exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
