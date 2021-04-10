@@ -138,8 +138,10 @@ class CosUpload:
         if not check_result:
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
-            self.cmd(exec_str1)
-            self.cmd(exec_str2)
+            if not self.cmd(exec_str1) or self.cmd(exec_str2):
+                self.alert(message="检查压缩包，压缩包异常，移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
+            else:
+                self.alert(message="检查压缩包，压缩包异常，文件名:{0}!".format(os.path.basename(achieve)))
             return False
         version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
         # 开始上传
@@ -161,18 +163,25 @@ class CosUpload:
         if status:
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
             exec_str2 = "mv {0} {1}/".format(abs_path, finish_dir)
-            self.cmd(exec_str1)
-            self.cmd(exec_str2)
+            if not self.cmd(exec_str1) or not self.cmd(exec_str2):
+                self.alert(message="上传资源成功,移动文件失败,文件名:{0},\n版本信息：{1}!".format(
+                    os.path.basename(achieve),
+                    '\n'.join(version_data))
+                )
+                return False
             self.alert(message="上传资源成功,文件名:{0},\n版本信息：{1}!".format(
                 os.path.basename(achieve),
                 '\n'.join(version_data))
             )
         else:
-            self.alert(message="上传资源失败，文件名:{0}!".format(os.path.basename(achieve)))
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
-            self.cmd(exec_str1)
-            self.cmd(exec_str2)
+            if not self.cmd(exec_str1) or not self.cmd(exec_str2):
+                self.alert(message="上传资源失败,移动文件失败,文件名:{0}!".format(
+                    os.path.basename(achieve)
+                ))
+                return False
+            self.alert(message="上传资源失败，文件名:{0}!".format(os.path.basename(achieve)))
             return
         i = 0
         while i <= CHECK_ONLINE_COUNT:
