@@ -118,12 +118,9 @@ class CosUpload:
             return False
         abs_path, filetype = os.path.splitext(achieve)
         check_result = self.check_package(abs_path=abs_path, achieve=achieve)
-        version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
-        if not isinstance(version_data, list):
-            return False
-
         if not check_result:
             return False
+        version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
         # 开始上传
         for x in check_result:
             try:
