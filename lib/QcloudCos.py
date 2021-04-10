@@ -118,11 +118,11 @@ class CosUpload:
         import requests
         for url in url_list:
             try:
-                check_url = os.path.join(
+                check_url = "{0}/{1}".format(
                     ONLINE_URL,
-                    url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '').replace("//", "/")
+                    url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
                 )
-                getr = requests.get(url=check_url)
+                getr = requests.get(url="https://{0}".format(check_url.replace("//", "")))
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
                 continue
