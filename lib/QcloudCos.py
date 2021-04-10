@@ -189,6 +189,7 @@ class CosUpload:
                     time.sleep(20)
                 else:
                     self.alert(message="{0}:文件已上传完成，并已生效！".format(os.path.basename(achieve)))
+                    break
                 i += 1
             self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(
                 os.path.basename(achieve), CHECK_ONLINE_COUNT * 20
