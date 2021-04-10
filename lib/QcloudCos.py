@@ -180,6 +180,15 @@ class CosUpload:
             except Exception as error:
                 RecodeLog.error(msg="文件:{0}，上传失败，原因：{1}".format(os.path.basename(x), error))
                 status = False
+        i = 0
+        while i <= CHECK_ONLINE_COUNT:
+            if not self.check_url(url_list=check_result, abs_path=abs_path):
+                time.sleep(20)
+            else:
+                self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
+                return
+            i += 1
+        self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(achieve, CHECK_ONLINE_COUNT * 20))
         # 根据结果移动文件
         if status:
             exec_str1 = "mv {0} {1}".format(achieve, finish_dir)
@@ -204,15 +213,7 @@ class CosUpload:
                 return False
             self.alert(message="上传资源失败，文件名:{0}!".format(os.path.basename(achieve)))
             return
-        i = 0
-        while i <= CHECK_ONLINE_COUNT:
-            if not self.check_url(url_list=check_result, abs_path=abs_path):
-                time.sleep(20)
-            else:
-                self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
-                return
-            i += 1
-        self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(achieve, CHECK_ONLINE_COUNT * 20))
+
 
     def unzip_package(self, package):
         """
