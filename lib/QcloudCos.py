@@ -109,15 +109,19 @@ class CosUpload:
             ))
             return False
 
-    def check_url(self, url_list):
+    def check_url(self, url_list, abs_path):
         """
         :param url_list:
+        :param abs_path:
         :return:
         """
         import requests
         for url in url_list:
             try:
-                check_url = os.path.join(ONLINE_URL, url.strip(UPLOAD_DIR))
+                check_url = os.path.join(
+                    ONLINE_URL,
+                    url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
+                )
                 getr = requests.get(url=check_url)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
@@ -190,7 +194,7 @@ class CosUpload:
             return
         i = 0
         while i <= CHECK_ONLINE_COUNT:
-            if not self.check_url(url_list=check_result):
+            if not self.check_url(url_list=check_result, abs_path=abs_path):
                 time.sleep(20)
             else:
                 self.alert(message="{0}:文件已上传完成，并已生效！".format(achieve))
