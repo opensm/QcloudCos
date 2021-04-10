@@ -175,7 +175,7 @@ class CosUpload:
             if not self.cmd(exec_str1) or not self.cmd(exec_str2):
                 self.alert(message="上传资源成功,移动文件失败,文件名:{0},\n版本信息：{1}!".format(
                     os.path.basename(achieve),
-                    '\n'.join(version_data))
+                    str(version_data).replace(',', ',\n'))
                 )
                 return False
             self.alert(message="上传资源成功,文件名:{0},\n版本信息：{1}!".format(
