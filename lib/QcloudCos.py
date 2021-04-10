@@ -33,6 +33,7 @@ class CosUpload:
                 raise Exception("文件不存在,{0}".format(json_file))
             with open(json_file, 'r') as fff:
                 data = json.loads(fff)
+                print(data)
                 return data
         except Exception as error:
             RecodeLog.error(msg="读取{1}文件失败：{0}".format(error, json_file))
