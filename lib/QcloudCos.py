@@ -146,9 +146,7 @@ class CosUpload:
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
             if not self.cmd(exec_str1) or not self.cmd(exec_str2):
-                self.alert(message="检查压缩包，压缩包异常，移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
-            else:
-                self.alert(message="检查压缩包，压缩包异常，文件名:{0}!".format(os.path.basename(achieve)))
+                self.alert(message="移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
             return False
         version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
         # 开始上传
