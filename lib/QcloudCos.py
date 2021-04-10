@@ -250,11 +250,16 @@ class CosUpload:
         """
         current_dir = os.path.dirname(achieve_name)
         finish_dir = os.path.join(current_dir, FINISH_DIR)
+        rm_cmd_str = "rm -f {0}".format(achieve_name)
         if os.path.exists(
-                os.path.join(finish_dir, os.path.basename(achieve_name))
+                os.path.join(
+                    finish_dir,
+                    os.path.basename(achieve_name)
+                )
         ):
             RecodeLog.warn(msg="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
             self.alert(message="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
+            self.cmd(cmd_str=rm_cmd_str)
             return False
         if not os.path.exists(achieve_name):
             RecodeLog.error(msg="文件不存在:{0}".format(achieve_name))
