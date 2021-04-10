@@ -182,6 +182,7 @@ class CosUpload:
                 status = False
         # 根据结果移动文件
         if status:
+            # 检查生效状态
             i = 0
             while i <= CHECK_ONLINE_COUNT:
                 if not self.check_url(url_list=check_result, abs_path=abs_path):
