@@ -17,7 +17,7 @@ import simplejson as json
 def out_md5(src):
     # 简单封装
     m = hashlib.md5()
-    m.update(src.encode('utf-8'))
+    m.update(src)
     return m.hexdigest()
 
 
