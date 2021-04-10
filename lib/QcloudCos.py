@@ -136,10 +136,12 @@ class CosUpload:
         abs_path, filetype = os.path.splitext(achieve)
         check_result = self.check_package(abs_path=abs_path, achieve=achieve)
         if not check_result:
+            print("dddd")
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
             self.cmd(exec_str1)
             self.cmd(exec_str2)
+            print("dddd")
             return False
         version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
         # 开始上传
