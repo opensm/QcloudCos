@@ -138,7 +138,7 @@ class CosUpload:
         if not check_result:
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
             exec_str2 = "mv {0} {1}".format(abs_path, error_dir)
-            if not self.cmd(exec_str1) or self.cmd(exec_str2):
+            if not self.cmd(exec_str1) or not self.cmd(exec_str2):
                 self.alert(message="检查压缩包，压缩包异常，移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
             else:
                 self.alert(message="检查压缩包，压缩包异常，文件名:{0}!".format(os.path.basename(achieve)))
@@ -258,13 +258,30 @@ class CosUpload:
         :return:
         """
         current_dir = os.path.dirname(achieve_name)
+        achieve_path, filetype = os.path.splitext(os.path.basename(achieve_name))
         finish_dir = os.path.join(current_dir, FINISH_DIR)
+        error_dir = os.path.join(current_dir, ERROR_DIR)
         rm_cmd_str = "rm -f {0}".format(achieve_name)
         if os.path.exists(
                 os.path.join(
                     finish_dir,
                     os.path.basename(achieve_name)
                 )
+        ) or os.path.exists(
+            os.path.join(
+                error_dir,
+                os.path.basename(achieve_name)
+            )
+        ) or os.path.exists(
+            os.path.join(
+                finish_dir,
+                achieve_path
+            )
+        ) or os.path.exists(
+            os.path.join(
+                error_dir,
+                achieve_path
+            )
         ):
             RecodeLog.warn(msg="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
             self.alert(message="文件已经上传完成过：{0}".format(os.path.join(finish_dir, os.path.basename(achieve_name))))
