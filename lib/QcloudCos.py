@@ -204,12 +204,12 @@ class CosUpload:
             if not self.cmd(exec_str1) or not self.cmd(exec_str2):
                 self.alert(message="上传资源成功,移动文件失败,文件名:{0},\n版本信息：{1}!".format(
                     os.path.basename(achieve),
-                    str(version_data).replace(',', ',\n'))
+                    json.dumps(version_data).replace(',', ',\n'))
                 )
                 return False
             self.alert(message="上传资源成功,文件名:{0},\n版本信息：{1}!".format(
                 os.path.basename(achieve),
-                '\n'.join(version_data))
+                json.dumps(version_data).replace(',', ',\n'))
             )
         else:
             exec_str1 = "mv {0} {1}".format(achieve, error_dir)
