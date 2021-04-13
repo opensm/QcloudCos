@@ -76,14 +76,14 @@ class CosUpload:
         if not isinstance(urls, list):
             raise TypeError("输入类型错误！{}".format(urls))
         for url in urls:
-            check_url = os.path.join(
-                ONLINE_URL,
-                url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
-            ).replace("//", "/")
-            # check_url = "{0}/{1}".format(
+            # check_url = os.path.join(
             #     ONLINE_URL,
             #     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
-            # )
+            # ).replace("//", "/")
+            check_url = "{0}/{1}".format(
+                ONLINE_URL,
+                url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
+            )
             url_list.append("https://{0}".format(check_url))
         try:
             httpProfile = HttpProfile()
