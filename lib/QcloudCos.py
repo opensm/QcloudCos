@@ -228,7 +228,7 @@ class CosUpload:
                 self.alert(message="{0}:刷新CDN失败，请检查日志！".format(os.path.basename(achieve)))
                 return False
             else:
-                self.alert(message="{0}:刷新CDN成功，请检查日志！".format(os.path.basename(achieve)))
+                self.alert(message="{0}:刷新CDN成功！".format(os.path.basename(achieve)))
             # 检查生效状态
             i = 0
             check_online_result = False
