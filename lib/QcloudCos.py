@@ -79,7 +79,7 @@ class CosUpload:
             check_url = os.path.join(
                 ONLINE_URL,
                 url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
-            )
+            ).replace("//", "/")
             # check_url = "{0}/{1}".format(
             #     ONLINE_URL,
             #     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
