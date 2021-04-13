@@ -123,7 +123,7 @@ class CosUpload:
             self.alert(message="{0}:数据读取异常！".format(os.path.join(abs_path, 'baicorv.json')))
             return False
 
-        package = json_version_data['package']
+        package = json_version_data['apk']
         version = json_version_data['version']
         abs_package = os.path.join(abs_path, package)
         if not os.path.exists(abs_package):
