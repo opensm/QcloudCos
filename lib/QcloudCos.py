@@ -80,7 +80,7 @@ class CosUpload:
                 ONLINE_URL,
                 url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
             )
-            url_list.append("https://{0}".format(check_url.replace("\/\/", "")))
+            url_list.append("https://{0}".format(check_url.replace('//', "")))
         try:
             httpProfile = HttpProfile()
             httpProfile.endpoint = "cdn.tencentcloudapi.com"
