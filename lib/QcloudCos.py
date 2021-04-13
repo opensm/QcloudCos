@@ -12,6 +12,12 @@ import glob
 import time
 import hashlib
 import simplejson as json
+import json
+from tencentcloud.common import credential
+from tencentcloud.common.profile.client_profile import ClientProfile
+from tencentcloud.common.profile.http_profile import HttpProfile
+from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
+from tencentcloud.cdn.v20180606 import cdn_client, models
 
 
 def out_md5(src):
@@ -26,6 +32,7 @@ class CosUpload:
         self.tag_file = os.path.join(LOG_DIR, 'cos.tag')
         try:
             cnf = CosConfig(**COS_INIT_PARAMS)
+            self.cred = credential.Credential(COS_INIT_PARAMS['SecretId'], COS_INIT_PARAMS['SecretKey'])
             self.client = CosS3Client(cnf)
         except Exception as error:
             RecodeLog.error(msg="初始化COS失败，{0}".format(error))
@@ -60,6 +67,41 @@ class CosUpload:
         except Exception as error:
             RecodeLog.error(msg="读取{1}文件失败：{0}".format(error, js_file))
             return False
+
+    def flush_cdn_url(self, urls, abs_path):
+        """
+        :return:
+        """
+        url_list = list()
+        if not isinstance(urls, list):
+            raise TypeError("输入类型错误！{}".format(urls))
+        for url in urls:
+            check_url = "{0}/{1}".format(
+                ONLINE_URL,
+                url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
+            )
+            url_list.append("https://{0}".format(check_url.replace("\/\/", "")))
+        try:
+            httpProfile = HttpProfile()
+            httpProfile.endpoint = "cdn.tencentcloudapi.com"
+
+            clientProfile = ClientProfile()
+            clientProfile.httpProfile = httpProfile
+            client = cdn_client.CdnClient(self.cred, "", clientProfile)
+
+            req = models.PurgeUrlsCacheRequest()
+            params = {
+                "Urls": url_list
+            }
+            req.from_json_string(json.dumps(params))
+
+            resp = client.PurgeUrlsCache(req)
+            RecodeLog.info("刷新CDN成功：{0}!".format(','.join(url_list).rstrip(',')))
+            print(resp.to_json_string())
+            return True
+        except TencentCloudSDKException as err:
+            RecodeLog.info("刷新CDN失败：{0}，原因：{1}!".format(','.join(url_list).rstrip(','), err))
+            return True
 
     def check_package(self, abs_path, achieve):
         """
@@ -182,6 +224,11 @@ class CosUpload:
                 status = False
         # 根据结果移动文件
         if status:
+            if not self.flush_cdn_url(urls=check_result, abs_path=abs_path):
+                self.alert(message="{0}:刷新CDN失败，请检查日志！".format(os.path.basename(achieve)))
+                return False
+            else:
+                self.alert(message="{0}:刷新CDN成功，请检查日志！".format(os.path.basename(achieve)))
             # 检查生效状态
             i = 0
             check_online_result = False
