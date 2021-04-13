@@ -76,11 +76,15 @@ class CosUpload:
         if not isinstance(urls, list):
             raise TypeError("输入类型错误！{}".format(urls))
         for url in urls:
-            check_url = "{0}/{1}".format(
+            check_url = os.path.join(
                 ONLINE_URL,
                 url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
             )
-            url_list.append("https://{0}".format(check_url.replace("\/\/", "/")))
+            # check_url = "{0}/{1}".format(
+            #     ONLINE_URL,
+            #     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
+            # )
+            url_list.append("https://{0}".format(check_url))
         try:
             httpProfile = HttpProfile()
             httpProfile.endpoint = "cdn.tencentcloudapi.com"
@@ -97,7 +101,6 @@ class CosUpload:
 
             resp = client.PurgeUrlsCache(req)
             RecodeLog.info("刷新CDN成功：{0}!".format(','.join(url_list).rstrip(',')))
-            print(resp.to_json_string())
             return True
         except TencentCloudSDKException as err:
             RecodeLog.info("刷新CDN失败：{0}，原因：{1}!".format(','.join(url_list).rstrip(','), err))
