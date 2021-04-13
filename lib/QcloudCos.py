@@ -188,7 +188,9 @@ class CosUpload:
                     raise Exception("文件：未更新,获取到远程文件:{2},MD5:{0},本地文件：{3}MD5:{1}".format(
                         remote_data, local_data, check_url, url
                     ))
-                continue
+                RecodeLog.info(msg="文件：已更新,获取到远程文件:{2},MD5:{0},本地文件：{3}MD5:{1}".format(
+                    remote_data, local_data, check_url, url
+                ))
             except Exception as error:
                 RecodeLog.error(msg=error)
                 return False
