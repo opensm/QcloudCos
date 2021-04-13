@@ -185,7 +185,9 @@ class CosUpload:
                 with open(url, 'r') as fff:
                     local_data = out_md5(src=fff.read())
                 if remote_data != local_data:
-                    raise Exception("文件未更新,获取到远程MD5:{0},本地MD5:{1}".format(remote_data, local_data))
+                    raise Exception("文件：未更新,获取到远程文件:{2},MD5:{0},本地文件：{3}MD5:{1}".format(
+                        remote_data, local_data, check_url, url
+                    ))
                 continue
             except Exception as error:
                 RecodeLog.error(msg=error)
