@@ -80,7 +80,7 @@ class CosUpload:
                 ONLINE_URL,
                 url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
             )
-            url_list.append("https://{0}".format(check_url.replace('\/\/', "")))
+            url_list.append("https://{0}".format(check_url.replace("\/\/", "/")))
         try:
             httpProfile = HttpProfile()
             httpProfile.endpoint = "cdn.tencentcloudapi.com"
@@ -171,7 +171,7 @@ class CosUpload:
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
                 )
-                getr = requests.get(url="https://{0}".format(check_url.replace("\/\/", "")), stream=True)
+                getr = requests.get(url="https://{0}".format(check_url.replace("\/\/", "/")), stream=True)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
                 remote_data = out_md5(src=getr.raw.read())
