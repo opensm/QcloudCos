@@ -199,7 +199,7 @@ class CosUpload:
             if not self.cmd(exec_str1) or not self.cmd(exec_str2):
                 self.alert(message="移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
             return False
-        version_data = self.read_json(json_file=os.path.join(abs_path, 'baicorv.json'))
+        version_data = self.read_json(json_file=os.path.join(abs_path, 'ios_baicorv.json'))
         # 开始上传
         for x in check_result:
             try:
