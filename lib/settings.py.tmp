@@ -24,6 +24,7 @@ LOG_FILE = "qloud_cos.log"
 LOG_LEVEL = "INFO"
 
 ENV_LIST = ['dev-android', 'pre-android', 'prod-android']
+IOS_ENV_LIST = ['dev-ios', 'pre-ios', 'prod-ios']
 
 __all__ = [
     'COS_INIT_PARAMS',
@@ -40,5 +41,6 @@ __all__ = [
     'LOG_FILE',
     'LOG_LEVEL',
     'ENV_LIST',
+    'IOS_ENV_LIST'
     'CHECK_ONLINE_COUNT'
 ]
