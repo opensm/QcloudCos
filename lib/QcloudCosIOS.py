@@ -127,13 +127,12 @@ class CosUpload:
         # 检查js
         js_version_data = self.read_js(js_file=os.path.join(abs_path, 'ios_baicorv.js'))
         js_version_status = False
-        js_package_status = False
         for y in js_version_data:
             if "'name':'{0}'".format(version) in y.replace(' ', '').strip('\n'):
                 js_version_status = True
-            if "'download-url':'{0}'".format(ios_url) in y.replace(' ', '').strip('\n'):
+            if "'download_url':'{0}'".format(ios_url) in y.replace(' ', '').strip('\n'):
                 js_package_status = True
-        if js_version_status and js_package_status:
+        if js_version_status:
             RecodeLog.info(msg="{0},{1}信息对应，检查无问题！".format(
                 *[os.path.basename(x) for x in achieve_list]
             ))
