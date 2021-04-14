@@ -132,7 +132,7 @@ class CosUpload:
                 js_version_status = True
             if "'download_url':'{0}'".format(ios_url) in y.replace(' ', '').strip('\n'):
                 js_package_status = True
-        if js_version_status:
+        if js_version_status and js_package_status:
             RecodeLog.info(msg="{0},{1}信息对应，检查无问题！".format(
                 *[os.path.basename(x) for x in achieve_list]
             ))
