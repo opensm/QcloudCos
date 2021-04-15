@@ -19,6 +19,7 @@ from tencentcloud.common.profile.http_profile import HttpProfile
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
 from tencentcloud.cdn.v20180606 import cdn_client, models
 
+reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
