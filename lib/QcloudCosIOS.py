@@ -108,18 +108,60 @@ class CosUpload:
         :param achieve:
         :return:
         """
-        achieve_list = []
-        for x in ['ios_baicorv.json', 'ios_baicorv.js']:
-            abs_achieve = os.path.join(abs_path, x)
-            if not os.path.exists(abs_achieve):
-                RecodeLog.warn(msg="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, abs_achieve))
-                self.alert(message="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, abs_achieve))
+        inside_page = os.path.join(abs_path, 'inside_ios_baicorv.json')
+        outside_page = os.path.join(abs_path, 'outside_ios_baicorv.json')
+        json_file = None
+        js_file = None
+        if os.path.exists(inside_page) and os.path.exists(outside_page):
+            RecodeLog.warn(msg="文件异常，请检查压缩包！")
+            self.alert(message="文件异常，请检查压缩包！")
+            return False
+        elif os.path.exists(inside_page) and not os.path.exists(outside_page):
+            if os.path.exists("{0}.js".format(
+                    os.path.splitext(inside_page)[0]
+            )):
+                json_file = inside_page
+                js_file = "{0}.js".format(
+                    os.path.splitext(inside_page)[0]
+                )
+            else:
+                RecodeLog.warn(msg="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                    os.path.splitext(inside_page)[0]
+                )))
+                self.alert(message="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                    os.path.splitext(inside_page)[0]
+                )))
                 return False
-            achieve_list.append(abs_achieve)
-        json_version_data = self.read_json(json_file=os.path.join(abs_path, 'ios_baicorv.json'))
+        elif not os.path.exists(inside_page) and os.path.exists(outside_page):
+            if os.path.exists("{0}.js".format(
+                    os.path.splitext(outside_page)[0]
+            )):
+                json_file = outside_page
+                js_file = "{0}.js".format(
+                    os.path.splitext(outside_page)[0]
+                )
+            else:
+                RecodeLog.warn(msg="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                    os.path.splitext(outside_page)[0]
+                )))
+                self.alert(message="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                    os.path.splitext(outside_page)[0]
+                )))
+                return False
+        else:
+            RecodeLog.warn(msg="{1}文件异常，请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                os.path.splitext(outside_page)[0]
+            )))
+            self.alert(message="{1}文件异常，请检查压缩包:{0}！".format(achieve, "{0}.js".format(
+                os.path.splitext(outside_page)[0]
+            )))
+            return False
+
+        achieve_list = [js_file, json_file]
+        json_version_data = self.read_json(json_file=json_file)
         if not json_version_data:
-            RecodeLog.error(msg="{0}:数据读取异常！".format(os.path.join(abs_path, 'ios_baicorv.json')))
-            self.alert(message="{0}:数据读取异常！".format(os.path.join(abs_path, 'ios_baicorv.json')))
+            RecodeLog.error(msg="{0}:数据读取异常！".format(json_file))
+            self.alert(message="{0}:数据读取异常！".format(json_file))
             return False
 
         ios_url = json_version_data['downloadUrl']
@@ -127,10 +169,11 @@ class CosUpload:
         # 检查js
         js_version_data = self.read_js(js_file=os.path.join(abs_path, 'ios_baicorv.js'))
         js_version_status = False
+        js_package_status = False
         for y in js_version_data:
             if "'name':'{0}'".format(version) in y.replace(' ', '').strip('\n'):
                 js_version_status = True
-            if "'download_url':'{0}'".format(ios_url) in y.replace(' ', '').strip('\n'):
+            if "'code':'{0}'".format(ios_url) in y.replace(' ', '').strip('\n'):
                 js_package_status = True
         if js_version_status and js_package_status:
             RecodeLog.info(msg="{0},{1}信息对应，检查无问题！".format(
@@ -198,9 +241,11 @@ class CosUpload:
             if not self.cmd(exec_str1) or not self.cmd(exec_str2):
                 self.alert(message="移动文件失败，文件名:{0}!".format(os.path.basename(achieve)))
             return False
-        version_data = self.read_json(json_file=os.path.join(abs_path, 'ios_baicorv.json'))
+        version_data = ""
         # 开始上传
         for x in check_result:
+            if x.endswith('.json'):
+                version_data = self.read_json(json_file=x)
             try:
                 with open(x, 'rb') as fp:
                     response = self.client.put_object(
