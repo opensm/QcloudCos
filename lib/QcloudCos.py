@@ -175,7 +175,7 @@ class CosUpload:
                 getr = requests.get(url="https://{0}".format(check_url), stream=True)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
-                remote_data = out_md5(src=getr.raw.read().encode("utf-8"))
+                remote_data = out_md5(src=getr.raw.read())
                 with open(url, 'r') as fff:
                     local_data = out_md5(src=fff.read().encode(encoding='utf-8'))
                 if remote_data != local_data:
