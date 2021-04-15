@@ -170,10 +170,8 @@ class CosUpload:
         import requests
         for url in url_list:
             try:
-                # check_url = "{0}/{1}".format(
-                #     ONLINE_URL,
-                #     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
-                # )
+                if url.endswith('.apk'):
+                    continue
                 check_url = os.path.join(
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '').lstrip("/")
