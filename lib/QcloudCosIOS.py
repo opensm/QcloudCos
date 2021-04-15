@@ -162,9 +162,9 @@ class CosUpload:
                 getr = requests.get(url="https://{0}".format(check_url))
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
-                remote_data = out_md5(src=getr.content.encode('utf-8'))
+                remote_data = out_md5(src=getr.content)
                 with open(url, 'r') as fff:
-                    local_data = out_md5(src=fff.read().encode('utf-8'))
+                    local_data = out_md5(src=fff.read())
                 if remote_data != local_data:
                     raise Exception("文件：未更新,获取到远程文件:{2},MD5:{0},本地文件：{3},MD5:{1}".format(
                         remote_data, local_data, check_url, url
