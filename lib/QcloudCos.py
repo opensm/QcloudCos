@@ -61,7 +61,7 @@ class CosUpload:
         try:
             if not os.path.exists(js_file):
                 raise Exception("文件不存在,{0}".format(js_file))
-            with open(js_file, 'r') as fff:
+            with open(js_file, 'r', ) as fff:
                 data = fff.readlines()
                 return data
         except Exception as error:
@@ -80,10 +80,6 @@ class CosUpload:
                 ONLINE_URL,
                 url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '').lstrip("/")
             ).replace("//", "/")
-            # check_url = "{0}/{1}".format(
-            #     ONLINE_URL,
-            #     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '')
-            # )
             url_list.append("https://{0}".format(check_url))
         try:
             httpProfile = HttpProfile()
@@ -179,9 +175,9 @@ class CosUpload:
                 getr = requests.get(url="https://{0}".format(check_url), stream=True)
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
-                remote_data = out_md5(src=getr.raw.read())
+                remote_data = out_md5(src=getr.raw.read().encode("utf-8"))
                 with open(url, 'r') as fff:
-                    local_data = out_md5(src=fff.read())
+                    local_data = out_md5(src=fff.read().encode(encoding='utf-8'))
                 if remote_data != local_data:
                     raise Exception("文件：未更新,获取到远程文件:{2},MD5:{0},本地文件：{3},MD5:{1}".format(
                         remote_data, local_data, check_url, url
@@ -249,7 +245,7 @@ class CosUpload:
                     break
                 i += 1
             if check_online_result:
-                self.alert(message="{0}:文件已上传完成，检查时间{1}秒，并已生效！".format(os.path.basename(achieve), i*20))
+                self.alert(message="{0}:文件已上传完成，检查时间{1}秒，并已生效！".format(os.path.basename(achieve), i * 20))
             else:
                 self.alert(message="{0}:文件已上传完成，{1}秒检测，未生效，请检查！".format(
                     os.path.basename(achieve), CHECK_ONLINE_COUNT * 20
