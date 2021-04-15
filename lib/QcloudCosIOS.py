@@ -164,10 +164,10 @@ class CosUpload:
             self.alert(message="{0}:数据读取异常！".format(json_file))
             return False
 
-        ios_url = json_version_data['downloadUrl']
+        ios_url = json_version_data['code']
         version = json_version_data['name']
         # 检查js
-        js_version_data = self.read_js(js_file=os.path.join(abs_path, 'ios_baicorv.js'))
+        js_version_data = self.read_js(js_file=js_file)
         js_version_status = False
         js_package_status = False
         for y in js_version_data:
