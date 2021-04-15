@@ -169,16 +169,16 @@ class CosUpload:
         import requests
         for url in url_list:
             try:
-                if url.endswith('.apk'):
-                    continue
                 check_url = os.path.join(
                     ONLINE_URL,
                     url.replace(UPLOAD_DIR, '').replace(os.path.basename(abs_path), '').lstrip("/")
                 ).replace("//", "/")
-                getr = requests.get(url="https://{0}".format(check_url), stream=True)
+                getr = requests.get(url="https://{0}".format(check_url))
                 if getr.status_code != 200:
                     raise Exception("文件检查异常：{0}，{1}".format(check_url, getr.content))
-                remote_data = out_md5(src=getr.raw.read())
+                if url.endswith('.apk') and getr.status_code == 200:
+                    continue
+                remote_data = out_md5(src=getr.content)
                 with open(url, 'r') as fff:
                     local_data = out_md5(src=fff.read())
                 if remote_data != local_data:
