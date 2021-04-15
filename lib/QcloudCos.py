@@ -109,7 +109,7 @@ class CosUpload:
         :return:
         """
         achieve_list = []
-        for x in ['baicorv.json', 'baicorv.js', 'notice.json']:
+        for x in ['baicorv.json', 'baicorv.js', 'notice.js']:
             abs_achieve = os.path.join(abs_path, x)
             if not os.path.exists(abs_achieve):
                 RecodeLog.warn(msg="{1}文件异常，文件个数：0,请检查压缩包:{0}！".format(achieve, abs_achieve))
