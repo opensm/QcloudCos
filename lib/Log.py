@@ -21,7 +21,8 @@ if not RecodeLog.handlers:
     # 设置日志格式
     if LOG_LEVEL == "DEBUG":
         formatter = logging.Formatter(
-            "%(asctime)s - Message of File(文件): %(filename)s,Module(类):%(module)s,FuncName(函数):%(funcName)s ,LineNo(行数):%(lineno)d - %(levelname)s - %(message)s"
+            "%(asctime)s - Message of File(文件): %(filename)s,Module(类):%(module)s,FuncName(函数):%(funcName)s ,"
+            "LineNo(行数):%(lineno)d - %(levelname)s - %(message)s"
         )
     else:
         formatter = logging.Formatter(
@@ -34,3 +35,4 @@ if not RecodeLog.handlers:
     RecodeLog.addHandler(ch)
 
 __all__ = ['RecodeLog']
+

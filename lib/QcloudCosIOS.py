@@ -32,7 +32,10 @@ class CosUpload:
         self.tag_file = os.path.join(LOG_DIR, 'ios_cos.tag')
         try:
             cnf = CosConfig(**COS_INIT_PARAMS)
-            self.cred = credential.Credential(COS_INIT_PARAMS['SecretId'], COS_INIT_PARAMS['SecretKey'])
+            self.cred = credential.Credential(
+                COS_INIT_PARAMS['SecretId'],
+                COS_INIT_PARAMS['SecretKey']
+            )
             self.client = CosS3Client(cnf)
         except Exception as error:
             RecodeLog.error(msg="初始化COS失败，{0}".format(error))
@@ -110,6 +113,7 @@ class CosUpload:
         """
         inside_page = os.path.join(abs_path, 'inside_ios_baicorv.json')
         outside_page = os.path.join(abs_path, 'outside_ios_baicorv.json')
+        notice_json = os.path.join(abs_path, 'notice.json')
         json_file = None
         js_file = None
         if os.path.exists(inside_page) and os.path.exists(outside_page):
@@ -132,10 +136,11 @@ class CosUpload:
                     os.path.splitext(inside_page)[0]
                 )))
                 return False
+            achieve_list = [js_file, json_file]
         elif not os.path.exists(inside_page) and os.path.exists(outside_page):
             if os.path.exists("{0}.js".format(
                     os.path.splitext(outside_page)[0]
-            )):
+            )) and os.path.exists(notice_json):
                 json_file = outside_page
                 js_file = "{0}.js".format(
                     os.path.splitext(outside_page)[0]
@@ -148,6 +153,7 @@ class CosUpload:
                     os.path.splitext(outside_page)[0]
                 )))
                 return False
+            achieve_list = [js_file, json_file, notice_json]
         else:
             RecodeLog.warn(msg="{1}文件异常，请检查压缩包:{0}！".format(achieve, "{0}.js".format(
                 os.path.splitext(outside_page)[0]
@@ -157,7 +163,6 @@ class CosUpload:
             )))
             return False
 
-        achieve_list = [js_file, json_file]
         json_version_data = self.read_json(json_file=json_file)
         if not json_version_data:
             RecodeLog.error(msg="{0}:数据读取异常！".format(json_file))
